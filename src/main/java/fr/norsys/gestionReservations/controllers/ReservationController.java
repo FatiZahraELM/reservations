@@ -46,14 +46,15 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Void> createReservation(@RequestBody @Valid Reservation reservation){
         Reservation reservation1=reservationService.findById(reservation.getReservationId());
-        if(!roomService.findAvailableRoom().contains(reservation.getRoom()))
-            throw new AlreadyUsedException("the room is not available");
-        if(!reservation.areDatesCompatible())
-            throw new IllegalDatesFormatException("Reservation date should be before due date");
 
         if(reservation1!=null) {
             throw new AlreadyUsedException("Reservation with id: {" + reservation1.getReservationId() + "} already exists");
         }
+        if(!(roomService.findAvailableRoom().contains(reservation.getRoom())))
+            throw new AlreadyUsedException("the room is not available");
+        if(!reservation.areDatesCompatible())
+            throw new IllegalDatesFormatException("Reservation date should be before due date");
+
         reservationService.save(reservation);
         return ResponseEntity.ok(null);
     }
